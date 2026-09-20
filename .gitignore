@@ -1,0 +1,22 @@
+# Secrets
+.env
+.env.local
+*.key
+
+# Courses you generate — media is heavy and git never forgets a binary.
+# The bundled demo is committed deliberately (see make_demo.py); everything else is yours.
+courses/*
+!courses/demo/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Runtime
+*.log
+server.log
+
+# OS
+.DS_Store

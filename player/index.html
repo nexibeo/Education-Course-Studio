@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Course Studio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root{--navy:#154899;--org:#f98f2c;--ink:#333;--mut:#5b6b80;--ln:#dce4ef;--surf:#f3f7fc}
+*{box-sizing:border-box}
+body{margin:0;font-family:Montserrat,system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(180deg,#fff,#eef3fa);min-height:100vh;padding:56px 24px}
+.wrap{max-width:760px;margin:0 auto}
+.k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+h1{font-weight:800;letter-spacing:-.022em;font-size:34px;margin:10px 0 28px;color:var(--navy)}
+a.c{display:flex;justify-content:space-between;align-items:center;gap:16px;text-decoration:none;color:inherit;
+  background:#fff;border:1px solid var(--ln);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+a.c:hover{border-color:var(--navy)}
+a.c b{font-size:17px;font-weight:700}
+a.c .m{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut);white-space:nowrap}
+.empty{color:var(--mut);font-size:14px}
+</style></head><body><div class="wrap">
+<div class="k">{{BRAND}}</div><h1>Course Studio</h1><div id="l"></div>
+</div><script>
+const cs = /*{{COURSES}}*/[];
+document.getElementById('l').innerHTML = cs.length ? cs.map(c=>{
+  const m=Math.round((c.duration||0)/60);
+  return `<a class="c" href="/c/${c.id}"><b>${c.title}</b><span class="m">${c.sections} sections · ${m} min</span></a>`;
+}).join('') : '<div class="empty">No courses yet. Run ingest.py against a VideoGenerator build.</div>';
+</script></body></html>

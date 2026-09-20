@@ -1,0 +1,68 @@
+{
+ "id": "demo",
+ "title": "How Course Studio works",
+ "brand": "",
+ "duration": 28.54,
+ "audio": "voice.mp3",
+ "sections": [
+  {
+   "id": "s1",
+   "num": 1,
+   "title": "A course that is a web page",
+   "kicker": "Part 1",
+   "t0": 0.0,
+   "t1": 10.15,
+   "at": "0:00",
+   "frame_from": 0,
+   "frame_to": 0
+  },
+  {
+   "id": "s2",
+   "num": 2,
+   "title": "Ask while it runs",
+   "kicker": "Part 2",
+   "t0": 10.15,
+   "t1": 17.96,
+   "at": "0:10",
+   "frame_from": 1,
+   "frame_to": 1
+  },
+  {
+   "id": "s3",
+   "num": 3,
+   "title": "Questions become slides",
+   "kicker": "Part 3",
+   "t0": 17.96,
+   "t1": 28.54,
+   "at": "0:17",
+   "frame_from": 2,
+   "frame_to": 2
+  }
+ ],
+ "beats": [
+  {
+   "n": 1,
+   "t0": 0.0,
+   "t1": 10.15,
+   "say": "This is not a video file. It is a web page that plays itself against an audio track. Every slide you see is live markup, which is what makes the rest of this possible.",
+   "section": "s1"
+  },
+  {
+   "n": 2,
+   "t0": 10.15,
+   "t1": 17.96,
+   "say": "You can ask a question at any point. If the course already answers it, you get the section and the timestamp, and you can jump straight there.",
+   "section": "s2"
+  },
+  {
+   "n": 3,
+   "t0": 17.96,
+   "t1": 28.54,
+   "say": "When the course does not cover your question, it writes a new slide, narrates it, and drops it in at the end of the section you were watching. That is the part a finished video cannot do.",
+   "section": "s3"
+  }
+ ],
+ "frames": [],
+ "generated": [],
+ "source_build": "make_demo.py"
+}

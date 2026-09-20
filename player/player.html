@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course Studio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Tokens from brands/complete-ai-training/brand.config.json. The stage is the
+   untouched VideoGenerator site in an iframe; only this chrome is ours. */
+:root{
+  --navy:#154899; --navy2:#1e63c8; --org:#f98f2c; --ink:#333; --mut:#5b6b80;
+  --ln:#dce4ef; --surf:#f3f7fc; --bg:#fff; --pos:#1e9e62;
+  --display:'Montserrat','Avenir Next','Helvetica Neue',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:var(--display);color:var(--ink);background:#eef2f7}
+body{display:grid;grid-template-columns:1fr 400px;overflow:hidden}
+
+/* ---------- stage ---------- */
+.stage{position:relative;display:flex;flex-direction:column;min-width:0;background:#0b1220}
+.frame-wrap{position:relative;flex:1;min-height:0;display:grid;place-items:center;padding:14px}
+.box{position:relative;box-shadow:0 18px 60px rgba(0,0,0,.45);border-radius:10px;overflow:hidden;background:#fff}
+.scaler{position:absolute;inset:0;width:1920px;height:1080px;transform-origin:top left}
+.scaler iframe{width:1920px;height:1080px;border:0;display:block}
+
+/* A slide authored from a learner question. Rendered here rather than injected
+   into the build, so the original site stays byte-identical. */
+.gen{position:absolute;inset:0;background:linear-gradient(180deg,#fff,#eef3fa);display:none;
+  flex-direction:column;justify-content:center;padding:7% 8%;gap:18px}
+.gen.on{display:flex}
+.gen .k{font-family:var(--mono);font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--org)}
+.gen h2{font-weight:800;letter-spacing:-.022em;line-height:1.05;font-size:56px;margin:0;color:var(--navy);max-width:84%}
+.gen .rule{height:5px;width:120px;background:var(--org);border-radius:999px}
+.gen p{font-size:26px;line-height:1.45;color:var(--ink);margin:0;max-width:76%}
+.gen ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:13px}
+.gen li{font-size:24px;color:var(--ink);padding-left:34px;position:relative;line-height:1.35}
+.gen li::before{content:'';position:absolute;left:0;top:11px;width:13px;height:13px;border-radius:3px;background:var(--navy)}
+.gen .src{position:absolute;left:8%;bottom:6%;font-family:var(--mono);font-size:14px;color:var(--mut)}
+.genbar{position:absolute;right:24px;bottom:22px;display:flex;gap:10px;align-items:center}
+.genbar .vo{font-family:var(--mono);font-size:12px;color:var(--mut)}
+
+.bar{display:flex;align-items:center;gap:14px;padding:10px 16px;background:#0b1220;color:#cfe0f5;
+  border-top:1px solid rgba(255,255,255,.08)}
+.btn{appearance:none;border:0;background:var(--navy);color:#fff;font-family:var(--display);
+  font-weight:700;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer}
+.btn:hover{background:var(--navy2)}
+.btn.ghost{background:transparent;color:#cfe0f5;border:1px solid rgba(255,255,255,.2)}
+.time{font-family:var(--mono);font-size:12px;color:#8fa8c8;min-width:96px}
+.scrub{flex:1;appearance:none;height:5px;border-radius:999px;background:rgba(255,255,255,.16);outline:0}
+.scrub::-webkit-slider-thumb{appearance:none;width:13px;height:13px;border-radius:50%;background:var(--org);cursor:pointer}
+
+/* ---------- rail: Ask on top, always available; Sections below ---------- */
+.rail{display:flex;flex-direction:column;background:var(--bg);border-left:1px solid var(--ln);min-width:0;overflow:hidden}
+.head{padding:13px 16px;border-bottom:1px solid var(--ln);flex:none}
+.head .k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
+.head h1{font-size:15px;font-weight:800;letter-spacing:-.015em;margin:0;line-height:1.25}
+
+.askbox{flex:none;display:flex;flex-direction:column;border-bottom:1px solid var(--ln);
+  background:var(--surf);max-height:56vh}
+.askbox .t{display:flex;align-items:center;justify-content:space-between;padding:11px 16px 7px}
+.askbox .t b{font-size:12px;font-weight:800;letter-spacing:.02em}
+.askbox .t span{font-family:var(--mono);font-size:10px;color:var(--mut)}
+.msgs{overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:2px 14px 10px;min-height:0}
+.msgs:empty{display:none}
+.msg{max-width:100%;font-size:13px;line-height:1.5;padding:9px 12px;border-radius:12px}
+.msg.me{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-start;background:#fff;border:1px solid var(--ln);border-bottom-left-radius:4px}
+.msg.err{align-self:flex-start;background:#fdecec;border:1px solid #f6c9c9;color:#8a2b2b}
+.msg .cite{display:inline-flex;gap:6px;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--navy);
+  background:var(--surf);border:1px solid var(--ln);border-radius:999px;padding:4px 10px;cursor:pointer}
+.msg .cite:hover{border-color:var(--navy)}
+.msg .made{margin-top:7px;font-family:var(--mono);font-size:10.5px;color:var(--pos)}
+.opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.opt{font-size:11.5px;font-weight:600;color:var(--navy);background:var(--surf);border:1px solid var(--ln);
+  border-radius:999px;padding:5px 11px;cursor:pointer}
+.opt:hover{border-color:var(--navy);background:#fff}
+.ask{display:flex;gap:8px;padding:10px 14px 13px;border-top:1px solid var(--ln);background:var(--bg);flex:none}
+.ask input{flex:1;font-family:var(--display);font-size:13px;padding:10px 13px;border:1px solid var(--ln);
+  border-radius:999px;outline:0;min-width:0}
+.ask input:focus{border-color:var(--navy)}
+.hint{font-size:11.5px;color:var(--mut);line-height:1.45;padding:0 16px 11px}
+
+.secs{flex:1;min-height:0;overflow-y:auto;padding:10px 12px 16px}
+.secs .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mut);padding:2px 4px 8px}
+.sec{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.sec:hover{background:var(--surf)}
+.sec.on{background:var(--surf);border-color:var(--ln)}
+.sec .n{font-family:var(--mono);font-size:11px;color:#fff;background:var(--navy);border-radius:5px;
+  min-width:20px;height:20px;display:grid;place-items:center;flex:none;margin-top:1px}
+.sec.on .n{background:var(--org)}
+.sec .t{font-size:13px;font-weight:600;line-height:1.3}
+.sec .a{font-family:var(--mono);font-size:10.5px;color:var(--mut);margin-top:2px}
+.sec .badge{font-family:var(--mono);font-size:9.5px;color:var(--org);margin-top:3px}
+.dots::after{content:'';animation:d 1.2s steps(4,end) infinite}
+@keyframes d{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="frame-wrap" id="wrap">
+    <div class="box" id="box">
+      <div class="scaler" id="scaler"><iframe id="site" title="Course"></iframe></div>
+      <div class="gen" id="gen">
+        <div class="k" id="genK"></div>
+        <h2 id="genT"></h2>
+        <div class="rule"></div>
+        <p id="genB"></p>
+        <ul id="genL"></ul>
+        <div class="src" id="genQ"></div>
+        <div class="genbar">
+          <span class="vo" id="genVo"></span>
+          <button class="btn" id="genNext">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bar">
+    <button class="btn" id="play">Play</button>
+    <span class="time" id="time">0:00 / 0:00</span>
+    <input class="scrub" id="scrub" type="range" min="0" max="1000" value="0">
+    <button class="btn ghost" id="prev">Prev</button>
+    <button class="btn ghost" id="next">Next</button>
+  </div>
+</div>
+
+<aside class="rail">
+  <div class="head">
+    <div class="k">{{BRAND}}</div>
+    <h1 id="title">Loading…</h1>
+  </div>
+
+  <!-- Ask lives above Sections and is always available: a question that has to
+       wait for a tab switch is a question that does not get asked. -->
+  <div class="askbox">
+    <div class="t"><b>Ask</b><span id="askWhere"></span></div>
+    <div class="hint" id="hint">Ask anything. If the video answers it I will point you at the moment. If not, I will add a narrated slide at the end of your section.</div>
+    <div class="msgs" id="msgs"></div>
+    <form class="ask" id="askf">
+      <input id="q" placeholder="Ask a question…" autocomplete="off">
+      <button class="btn" type="submit">Ask</button>
+    </form>
+  </div>
+
+  <div class="secs" id="secs"></div>
+</aside>
+
+<script>
+const CID = "{{COURSE_ID}}";
+let course = null, doc = null, audio = null, btnSync = null, sections = [], cur = -1;
+let history = [];                 // the exchange, so clarifying questions have context
+let genQueue = [], genIdx = -1, genShownFor = new Set(), voPlayer = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const mmss = s => { s = Math.max(0, Math.round(s||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+
+/* The site is a fixed 1920x1080 composition: scale it, never reflow it. The
+   BOX takes the scaled size so the grid can centre it; the inner element only
+   carries the transform. */
+function fit() {
+  const w = $('wrap').clientWidth - 28, h = $('wrap').clientHeight - 28;
+  const k = Math.min(w/1920, h/1080);
+  $('box').style.width  = `${Math.round(1920*k)}px`;
+  $('box').style.height = `${Math.round(1080*k)}px`;
+  $('scaler').style.transform = `scale(${k})`;
+}
+addEventListener('resize', fit);
+
+/* The built site is SCROLL-driven: its own "Sync audio" button runs a loop
+   doing scrollTo(0, voice.currentTime * PXPS). Drive that, do not fight it. */
+function pxPerSecond() {
+  const w = $('site').contentWindow;
+  const d = audio && audio.duration ? audio.duration : (course.duration || 1);
+  return (w.document.documentElement.scrollHeight - w.innerHeight) / d;
+}
+function scrollToTime(t) { try { $('site').contentWindow.scrollTo(0, t * pxPerSecond()); } catch (_) {} }
+function isSyncing() { return !!btnSync && /pause/i.test(btnSync.textContent || ''); }
+
+function renderSections() {
+  const gen = course.generated || [];
+  $('secs').innerHTML = '<div class="lbl">Sections</div>' + sections.map((s,i) => {
+    const added = gen.filter(g => g.section_id === s.id).length;
+    return `<div class="sec${i===cur?' on':''}" data-i="${i}">
+      <div class="n">${s.num}</div>
+      <div><div class="t">${esc(s.title)}</div><div class="a">${s.at}</div>
+      ${added?`<div class="badge">+${added} answer${added>1?'s':''} from your questions</div>`:''}</div>
+    </div>`;
+  }).join('');
+  $('secs').querySelectorAll('.sec').forEach(el => el.onclick = () => seek(sections[+el.dataset.i].t0));
+  $('askWhere').textContent = cur >= 0 ? `in Section ${sections[cur].num}` : '';
+}
+
+function seek(t) {
+  if (!audio) return;
+  hideGen();
+  const s = sections.find(x => t >= x.t0 && t < x.t1);
+  if (s) genShownFor.delete(s.id);
+  audio.currentTime = t;
+  scrollToTime(t);
+  if (audio.paused && btnSync && !isSyncing()) btnSync.click();
+}
+
+/* ---- generated answers play at the END of their section ---- */
+function slidesFor(sid) { return (course.generated || []).filter(g => g.section_id === sid); }
+
+function stopVo() { if (voPlayer) { voPlayer.pause(); voPlayer = null; } }
+
+function showGen(i) {
+  const g = genQueue[i];
+  if (!g) return hideGen();
+  genIdx = i;
+  stopVo();
+  $('genK').textContent = g.kicker || 'From your question';
+  $('genT').textContent = g.title || '';
+  $('genB').textContent = g.body || '';
+  $('genB').style.display = g.body ? '' : 'none';
+  $('genL').innerHTML = (g.items || []).map(x => `<li>${esc(x)}</li>`).join('');
+  $('genQ').textContent = g.question ? `You asked: ${g.question}` : '';
+  $('genNext').textContent = (i < genQueue.length - 1) ? 'Next answer' : 'Continue';
+  $('gen').classList.add('on');
+  if (g.audio) {
+    $('genVo').textContent = '♪ narrating';
+    voPlayer = new Audio(`/c/${CID}/generated/${g.audio}`);
+    voPlayer.onended = () => { $('genVo').textContent = ''; };
+    voPlayer.play().catch(() => { $('genVo').textContent = ''; });
+  } else {
+    $('genVo').textContent = '';
+  }
+}
+
+function hideGen() { stopVo(); $('gen').classList.remove('on'); genQueue = []; genIdx = -1; $('genVo').textContent=''; }
+
+$('genNext').onclick = () => {
+  if (genIdx < genQueue.length - 1) { showGen(genIdx + 1); return; }
+  hideGen();
+  if (audio && audio.paused && btnSync && !isSyncing()) btnSync.click();
+};
+
+function maybeInterrupt(t) {
+  if ($('gen').classList.contains('on')) return;
+  const s = sections[cur];
+  if (!s || t < s.t1 - 0.4 || t >= s.t1 + 1.5) return;
+  if (genShownFor.has(s.id)) return;
+  const q = slidesFor(s.id);
+  if (!q.length) return;
+  genShownFor.add(s.id);
+  genQueue = q;
+  if (isSyncing()) btnSync.click(); else if (audio && !audio.paused) audio.pause();
+  showGen(0);
+}
+
+function tick() {
+  if (!audio) return;
+  const t = audio.currentTime, d = audio.duration || course.duration || 1;
+  $('time').textContent = `${mmss(t)} / ${mmss(d)}`;
+  $('scrub').value = Math.round(t/d*1000);
+  const i = sections.findIndex(s => t >= s.t0 && t < s.t1);
+  if (i !== -1 && i !== cur) { cur = i; renderSections(); }
+  maybeInterrupt(t);
+  $('play').textContent = (isSyncing() || !audio.paused) ? 'Pause' : 'Play';
+}
+
+function bindSite() {
+  doc = $('site').contentDocument;
+  audio = doc.querySelector('audio');
+  btnSync = doc.getElementById('btnSync');
+  if (!audio) { $('time').textContent = 'no audio track'; return; }
+  ['timeupdate','play','pause','loadedmetadata'].forEach(e => audio.addEventListener(e, tick));
+  tick();
+}
+
+$('play').onclick = () => {
+  if (!audio) return;
+  if (btnSync) btnSync.click(); else audio.paused ? audio.play() : audio.pause();
+};
+$('scrub').oninput = e => {
+  if (!audio) return;
+  const t = (e.target.value/1000) * (audio.duration || course.duration);
+  audio.currentTime = t; scrollToTime(t);
+};
+$('prev').onclick = () => seek(cur > 0 ? sections[cur-1].t0 : 0);
+$('next').onclick = () => { if (cur < sections.length-1) seek(sections[cur+1].t0); };
+
+/* ---- chat ---- */
+function bubble(cls, html) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  d.innerHTML = html;
+  $('msgs').appendChild(d);
+  $('msgs').scrollTop = $('msgs').scrollHeight;
+  $('hint').style.display = 'none';
+  return d;
+}
+
+async function send(text) {
+  bubble('me', esc(text));
+  history.push({ role: 'user', text });
+  const pending = bubble('bot', 'Checking the course<span class="dots"></span>');
+  try {
+    const r = await fetch(`/c/${CID}/ask`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ question: text, section_id: sections[Math.max(cur,0)]?.id, history })
+    });
+    const d = await r.json();
+    pending.remove();
+
+    if (d.kind === 'clarify') {
+      const b = bubble('bot', esc(d.text) +
+        (d.options && d.options.length ? `<div class="opts">${d.options.map(o=>`<span class="opt">${esc(o)}</span>`).join('')}</div>` : ''));
+      b.querySelectorAll('.opt').forEach(el => el.onclick = () => {
+        b.querySelectorAll('.opt').forEach(x => x.remove());
+        send(el.textContent);
+      });
+      history.push({ role: 'assistant', clarify: true, text: d.text });
+
+    } else if (d.kind === 'covered') {
+      const b = bubble('bot', esc(d.text) + `<div class="cite">&#9654; Jump to ${esc(d.at)}</div>`);
+      b.querySelector('.cite').onclick = () => seek(d.seek);
+      history = [];                                  // question settled
+
+    } else if (d.kind === 'slide') {
+      bubble('bot', esc(d.text) + `<div class="made">&#10010; “${esc(d.slide.title)}” added${d.slide.audio ? ' with voiceover' : ''}</div>`);
+      course.generated = course.generated || [];
+      course.generated.push(d.slide);
+      genShownFor.delete(d.section_id);
+      renderSections();
+      history = [];
+
+    } else {
+      bubble('err', esc(d.text || 'Something went wrong.'));
+    }
+  } catch (ex) {
+    pending.remove();
+    bubble('err', 'Could not reach the server.');
+  }
+}
+
+$('askf').onsubmit = e => {
+  e.preventDefault();
+  const q = $('q').value.trim();
+  if (!q) return;
+  $('q').value = '';
+  send(q);
+};
+
+(async function boot(){
+  course = await (await fetch(`/c/${CID}/course.json`)).json();
+  sections = course.sections || [];
+  $('title').textContent = course.title || 'Course';
+  renderSections();
+  const f = $('site');
+  f.addEventListener('load', () => { bindSite(); fit(); });
+  f.src = `/c/${CID}/site/index.html`;
+  fit();
+})();
+</script>
+</body>
+</html>
