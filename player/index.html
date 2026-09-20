@@ -1,26 +1,75 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Course Studio</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=JetBrains+Mono:wght@400&display=swap">
+<html lang="en"><head><meta charset="utf-8">
+<title>{{BRAND}}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-:root{--navy:#154899;--org:#f98f2c;--ink:#333;--mut:#5b6b80;--ln:#dce4ef;--surf:#f3f7fc}
+:root{
+  --navy:#154899; --org:#f98f2c;
+  --ink:#141922; --mut:#64748b; --ln:#e2e8f2; --card:#fff;
+  --bg1:#ffffff; --bg2:#eef3fb;
+}
+@media (prefers-color-scheme:dark){
+  :root{--ink:#e8edf6; --mut:#8fa0b8; --ln:#242c3a; --card:#151a24; --bg1:#0d1117; --bg2:#121826}
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Montserrat,system-ui,sans-serif;color:var(--ink);
-  background:linear-gradient(180deg,#fff,#eef3fa);min-height:100vh;padding:56px 24px}
-.wrap{max-width:760px;margin:0 auto}
-.k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
-h1{font-weight:800;letter-spacing:-.022em;font-size:34px;margin:10px 0 28px;color:var(--navy)}
-a.c{display:flex;justify-content:space-between;align-items:center;gap:16px;text-decoration:none;color:inherit;
-  background:#fff;border:1px solid var(--ln);border-radius:14px;padding:18px 20px;margin-bottom:12px}
-a.c:hover{border-color:var(--navy)}
-a.c b{font-size:17px;font-weight:700}
-a.c .m{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut);white-space:nowrap}
-.empty{color:var(--mut);font-size:14px}
+body{margin:0;min-height:100vh;padding:72px 24px 56px;color:var(--ink);
+  font-family:Montserrat,system-ui,-apple-system,sans-serif;
+  background:
+    radial-gradient(900px 420px at 12% -8%, rgba(21,72,153,.10), transparent 60%),
+    radial-gradient(760px 360px at 92% 4%, rgba(249,143,44,.10), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg2));
+  background-attachment:fixed}
+.wrap{max-width:900px;margin:0 auto}
+
+.k{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--org)}
+h1{font-weight:800;letter-spacing:-.028em;font-size:clamp(32px,5vw,46px);
+  line-height:1.05;margin:12px 0 10px}
+.sub{color:var(--mut);font-size:16px;font-weight:500;max-width:52ch;line-height:1.55;margin:0 0 38px}
+
+.grid{display:grid;gap:14px}
+a.c{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:18px;
+  text-decoration:none;color:inherit;background:var(--card);
+  border:1px solid var(--ln);border-radius:16px;padding:22px 24px;
+  transition:border-color .16s ease, transform .16s ease, box-shadow .16s ease;overflow:hidden}
+a.c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--navy),var(--org));opacity:0;transition:opacity .16s ease}
+a.c:hover{border-color:transparent;transform:translateY(-2px);
+  box-shadow:0 10px 28px rgba(21,72,153,.14)}
+a.c:hover::before{opacity:1}
+a.c b{display:block;font-size:19px;font-weight:700;letter-spacing:-.012em;line-height:1.25}
+a.c .m{display:flex;gap:8px;align-items:center;margin-top:8px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut)}
+a.c .m i{font-style:normal;width:3px;height:3px;border-radius:50%;background:var(--mut);opacity:.5}
+a.c .go{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;
+  border:1px solid var(--ln);color:var(--navy);font-size:15px;line-height:1;
+  transition:background .16s ease,color .16s ease,border-color .16s ease}
+a.c:hover .go{background:var(--navy);border-color:var(--navy);color:#fff}
+@media (prefers-color-scheme:dark){ a.c:hover .go{background:#2f6ad0;border-color:#2f6ad0} }
+
+.empty{border:1px dashed var(--ln);border-radius:16px;padding:36px 28px;text-align:center;
+  color:var(--mut);font-size:15px;line-height:1.6}
+.empty code{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink);
+  background:rgba(127,140,160,.14);padding:2px 7px;border-radius:5px}
 </style></head><body><div class="wrap">
-<div class="k">{{BRAND}}</div><h1>Course Studio</h1><div id="l"></div>
-</div><script>
-const cs = /*{{COURSES}}*/[];
-document.getElementById('l').innerHTML = cs.length ? cs.map(c=>{
-  const m=Math.round((c.duration||0)/60);
-  return `<a class="c" href="/c/${c.id}"><b>${c.title}</b><span class="m">${c.sections} sections · ${m} min</span></a>`;
-}).join('') : '<div class="empty">No courses yet. Run ingest.py against a VideoGenerator build.</div>';
+  <div class="k">{{BRAND}}</div>
+  <h1>Course library</h1>
+  <p class="sub">Every course is a web page, not a video — so you can ask it questions while it
+  plays, and it can answer with a timestamp or write you a new slide.</p>
+  <div class="grid" id="l"></div>
+</div>
+<script>
+// Server substitutes the whole array. Note this is NOT wrapped in a comment: doing that
+// produced `[{...}][]` after substitution, which is a syntax error, and the list silently
+// never rendered.
+const cs = {{COURSES}};
+const mins = s => { const m = Math.round((s||0)/60); return m < 1 ? "under a minute" : m + " min"; };
+document.getElementById('l').innerHTML = cs.length
+  ? cs.map(c => `<a class="c" href="/c/${encodeURIComponent(c.id)}">
+      <span><b>${c.title}</b><span class="m">${c.sections} section${c.sections===1?'':'s'}<i></i>${mins(c.duration)}</span></span>
+      <span class="go">&rarr;</span></a>`).join('')
+  : `<div class="empty">No courses yet.<br>Build the bundled demo with <code>python3 make_demo.py</code>,
+     or point <code>ingest.py</code> at a VideoGenerator build.</div>`;
 </script></body></html>

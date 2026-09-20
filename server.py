@@ -154,7 +154,7 @@ class Handler(BaseHTTPRequestHandler):
                     }
                 )
             html = (PLAYER / "index.html").read_text().replace(
-                "/*{{COURSES}}*/", json.dumps(courses)
+                "{{COURSES}}", json.dumps(courses)
             ).replace("{{BRAND}}", html_escape(BRAND))
             self._send(200, html.encode(), "text/html; charset=utf-8")
             return

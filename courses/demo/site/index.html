@@ -1,40 +1,68 @@
 <!doctype html><html lang="en"><meta charset="utf-8">
 <title>Course Studio — demo</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-:root{--navy:#154899;--org:#F98F2C;--ink:#12131A;--mut:#6B7A90;--line:#E3EAF4}
+:root{--navy:#154899;--org:#F98F2C;--ink:#10151d;--body:#334155;--mut:#7d8ba0;--bg:#fff;--ln:#e6edf7}
+@media (prefers-color-scheme:dark){
+  :root{--ink:#eef3fb;--body:#b7c4d6;--mut:#7f8da3;--bg:#0d1117;--ln:#222b3a}
+}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%}
-body{background:#fff;color:var(--ink);
-  font:400 16px/1.5 'Montserrat',system-ui,-apple-system,sans-serif;overflow:hidden}
+body{background:var(--bg);color:var(--ink);overflow:hidden;
+  font-family:Montserrat,system-ui,-apple-system,sans-serif}
 #stage{position:relative;width:100vw;height:100vh;container-type:size}
+
 .frame{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
-  padding:0 8cqw;opacity:0;transition:opacity .45s ease;pointer-events:none}
+  padding:0 9cqw;opacity:0;transition:opacity .5s ease;pointer-events:none}
 .frame.on{opacity:1}
-.kicker{font-weight:700;font-size:1.5cqw;line-height:1;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--org);margin-bottom:1.6cqw}
-h2{font-weight:800;font-size:5.2cqw;line-height:1.08;letter-spacing:-.02em;max-width:74cqw}
-.rule{width:9cqw;height:.5cqw;background:var(--navy);border-radius:99px;margin:2.6cqw 0}
-h3{font-weight:700;font-size:2.6cqw;line-height:1.2;color:var(--navy);margin-bottom:1.6cqw}
-ul{list-style:none;display:flex;flex-direction:column;gap:1.2cqw;max-width:68cqw}
-li{position:relative;padding-left:3.4cqw;font-size:2cqw;color:#2A3242;
-  opacity:0;transform:translateY(10px);transition:all .5s ease}
+
+.kicker{display:flex;align-items:center;gap:1.4cqw;
+  font-family:'JetBrains Mono',monospace;font-weight:500;font-size:1.35cqw;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--org);margin-bottom:1.9cqw}
+.kicker s{width:4.5cqw;height:.28cqw;background:var(--org);border-radius:99px;display:block;
+  text-decoration:none}
+
+h2{font-weight:800;font-size:5.6cqw;line-height:1.05;letter-spacing:-.028em;max-width:68cqw}
+
+h3{font-weight:700;font-size:2.35cqw;line-height:1.25;color:var(--navy);
+  margin:3.4cqw 0 1.8cqw;letter-spacing:-.012em}
+@media (prefers-color-scheme:dark){ h3{color:#6fa4ff} }
+
+ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:1.35cqw;max-width:62cqw}
+li{position:relative;padding-left:3.6cqw;font-size:1.95cqw;font-weight:500;line-height:1.45;
+  color:var(--body);opacity:0;transform:translateY(12px);
+  transition:opacity .55s ease,transform .55s ease}
 .on li{opacity:1;transform:none}
-.on li:nth-child(2){transition-delay:.18s} .on li:nth-child(3){transition-delay:.36s}
-li::before{content:"";position:absolute;left:0;top:.66em;width:1.5cqw;height:.32cqw;
+.on li:nth-child(2){transition-delay:.16s}
+.on li:nth-child(3){transition-delay:.32s}
+li::before{content:"";position:absolute;left:0;top:.62em;width:1.9cqw;height:.26cqw;
   background:var(--org);border-radius:99px}
-#bar{position:fixed;left:0;bottom:0;height:.45cqw;background:var(--org);width:0;z-index:5}
-#cta{position:fixed;left:50%;bottom:4cqw;transform:translateX(-50%);z-index:6;
-  background:var(--navy);color:#fff;border:0;border-radius:99px;cursor:pointer;
-  padding:1.2cqw 3cqw;font-weight:700;font-size:1.7cqw;line-height:1;font-family:inherit}
+
+/* section counter, bottom right — gives the empty corner a job */
+.num{position:absolute;right:9cqw;bottom:6.5cqw;font-family:'JetBrains Mono',monospace;
+  font-weight:500;font-size:1.3cqw;letter-spacing:.1em;color:var(--mut)}
+.num b{color:var(--ink);font-weight:500}
+
+#bar{position:fixed;left:0;bottom:0;height:.42cqw;width:0;z-index:5;
+  background:linear-gradient(90deg,var(--navy),var(--org))}
+
+/* play overlay: a real affordance, not a stray pill */
+#cta{position:fixed;inset:0;z-index:6;display:grid;place-items:center;cursor:pointer;
+  border:0;padding:0;background:color-mix(in srgb,var(--bg) 72%,transparent);
+  backdrop-filter:blur(3px);font-family:inherit}
 #cta[hidden]{display:none}
-@media (prefers-color-scheme:dark){
-  body{background:#0E1117;color:#E7ECF4} h3{color:#7FB0FF} li{color:#B9C4D6}
-}
+#cta span{width:9cqw;height:9cqw;border-radius:50%;display:grid;place-items:center;
+  background:var(--navy);box-shadow:0 1.4cqw 4cqw rgba(21,72,153,.34);
+  transition:transform .18s ease}
+#cta:hover span{transform:scale(1.06)}
+#cta span::after{content:"";border-left:2.5cqw solid #fff;
+  border-top:1.55cqw solid transparent;border-bottom:1.55cqw solid transparent;
+  margin-left:.75cqw}
 </style>
-<div id="stage"><section class="frame" data-t0="0.00" data-t1="10.15"><div class="kicker">Part 1</div><h2>A course that is a web page</h2><div class="rule"></div><h3>No video file</h3><ul><li>The page drives itself from one audio element</li><li>Every slide is live markup, not pixels</li><li>So it can change while you are watching</li></ul></section><section class="frame" data-t0="10.15" data-t1="17.96"><div class="kicker">Part 2</div><h2>Ask while it runs</h2><div class="rule"></div><h3>Already covered?</h3><ul><li>The question is matched against the narration</li><li>You get a section and a timestamp back</li><li>One click seeks the player to that moment</li></ul></section><section class="frame" data-t0="17.96" data-t1="28.54"><div class="kicker">Part 3</div><h2>Questions become slides</h2><div class="rule"></div><h3>Not covered yet</h3><ul><li>A new slide is written for your question</li><li>It is narrated in the same voice</li><li>It is inserted at the end of that section</li></ul></section></div>
+<div id="stage"><section class="frame" data-t0="0.00" data-t1="10.15"><div class="kicker"><s></s>Part 1</div><h2>A course that is a web page</h2><h3>No video file</h3><ul><li>The page drives itself from one audio element</li><li>Every slide is live markup, not pixels</li><li>So it can change while you are watching</li></ul><div class="num"><b>01</b> / 03</div></section><section class="frame" data-t0="10.15" data-t1="17.96"><div class="kicker"><s></s>Part 2</div><h2>Ask while it runs</h2><h3>Already covered?</h3><ul><li>The question is matched against the narration</li><li>You get a section and a timestamp back</li><li>One click seeks the player to that moment</li></ul><div class="num"><b>02</b> / 03</div></section><section class="frame" data-t0="17.96" data-t1="28.54"><div class="kicker"><s></s>Part 3</div><h2>Questions become slides</h2><h3>Not covered yet</h3><ul><li>A new slide is written for your question</li><li>It is narrated in the same voice</li><li>It is inserted at the end of that section</li></ul><div class="num"><b>03</b> / 03</div></section></div>
 <div id="bar"></div>
-<button id="cta">Play</button>
+<button id="cta" aria-label="Play"><span></span></button>
 <audio id="voice" preload="auto" src="voice.mp3"></audio>
 <script>
 // The contract: each .frame carries t0/t1, and one <audio> decides which is visible.
