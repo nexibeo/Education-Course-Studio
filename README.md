@@ -187,8 +187,9 @@ the most interesting thing you could contribute.
 Built by **[Jeroen Erne](https://www.linkedin.com/in/jeroenerne/)**.
 
 - **[Nexibeo](https://nexibeo.com)** — AI systems and automation.
-- **[Complete AI Training](https://completeaitraining.com)** — where the courses this was
-  built for actually live.
+- **[Complete AI Training](https://completeaitraining.com)**
+  ([LinkedIn](https://www.linkedin.com/company/completeaitraining)) — where the courses
+  this was built for actually live.
 
 Inspired by **[OpenMAIC](https://github.com/THU-MAIC/OpenMAIC)**, which is where the idea
 of splitting a generated course into navigable sections came from. Course Studio shares no
